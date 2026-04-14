@@ -1,861 +1,480 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="dark">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Health NEXUS - Prototype</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0/dist/vanilla-tilt.min.js"></script>
-  <style>
-    .fade { animation: fadeIn .28s ease both }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
-    /* Mobile optimizations */
-    @media (max-width: 640px) {
-      .modal-mobile { inset: 0; position: fixed; display: flex; align-items: stretch; justify-content: center; }
-      .modal-mobile > div { width: 100% !important; max-width: 100% !important; height: 100% !important; border-radius: 0 !important; margin: 0 !important; overflow:auto !important; }
-      button, input[type="button"], input[type="submit"] { min-height: 48px; font-size: 16px; }
-      input, select, textarea { font-size: 16px; } /* Prevent zoom on iOS */
-      #store-grid { grid-template-columns: 1fr !important; }
-      .container { padding-left: 1rem; padding-right: 1rem; }
-    }
-    /* Better touch targets */
-    button { touch-action: manipulation; }
-    /* Prevent horizontal scroll */
-    body { overflow-x: hidden; }
-    /* Improve modal readability */
-    .modal-content { max-height: 90vh; overflow-y: auto; }
-  </style>
-</head>
-<body class="bg-slate-50 text-slate-800">
-  <header class="bg-white shadow p-3 sm:p-4 sticky top-0 z-50">
-    <div class="container mx-auto flex items-center justify-between flex-wrap gap-2">
-      <div class="flex items-center gap-2 sm:gap-3">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/1200px-Emblem_of_India.svg.png" alt="logo" class="w-8 h-8 sm:w-10 sm:h-10 opacity-80" />
-        <h1 class="text-lg sm:text-xl font-bold">Health NEXUS</h1>
-      </div>
-      <div class="flex items-center gap-1 sm:gap-2 flex-wrap">
-        <button id="nav-store" class="px-2 sm:px-4 py-2 text-sm sm:text-base rounded bg-amber-400 hover:bg-amber-500 hidden" data-i18n="store">Store</button>
-        <button id="nav-vault" class="px-2 sm:px-4 py-2 text-sm sm:text-base rounded bg-slate-100 hover:bg-slate-200 hidden" data-i18n="vault">Vault</button>
-        <button id="nav-orders" class="px-2 sm:px-4 py-2 text-sm sm:text-base rounded bg-slate-100 hover:bg-slate-200 hidden" data-i18n="orders">Orders</button>
-        <button id="login-nav" class="px-2 sm:px-4 py-2 text-sm sm:text-base rounded bg-teal-600 text-white hidden" data-i18n="login">Login</button>
-        <button id="logout-btn" class="px-2 sm:px-4 py-2 text-sm sm:text-base rounded bg-red-600 text-white hidden" data-i18n="logout">Logout</button>
-        <div class="ml-1 sm:ml-2 flex items-center gap-1">
-          <button id="lang-en" class="px-2 py-1.5 text-xs sm:text-sm rounded bg-slate-100">EN</button>
-          <button id="lang-hi" class="px-2 py-1.5 text-xs sm:text-sm rounded bg-slate-100">हिंदी</button>
-        </div>
-          <div id="user-location" class="ml-2 sm:ml-4 text-xs sm:text-sm text-slate-500 hidden truncate max-w-[100px] sm:max-w-none"></div>
-      </div>
-    </div>
-  </header>
-
-  <main class="container mx-auto p-3 sm:p-6">
-    <!-- LANDING PAGE -->
-    <section id="landing" class="fade">
-      <div class="text-center py-8 sm:py-12 px-2 sm:px-4">
-        <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 mb-3 sm:mb-4 leading-tight" data-i18n="landing_title">Your Trusted Digital Health Partner</h2>
-        <p class="mt-2 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto px-4" data-i18n="landing_sub">Access affordable generic medicines, securely store your medical documents, and manage your health with ease.</p>
-        <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4">
-          <button id="cta-login" class="w-full sm:w-auto px-6 sm:px-8 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-full font-semibold hover:shadow-lg transition text-base" data-i18n="get_started">Get Started</button>
-          <button id="cta-learn" class="px-8 py-3 bg-white border-2 border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition" data-i18n="learn_more">Learn More</button>
-        </div>
-        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition">
-            <img src="https://etimg.etb2bimg.com/photo/82181938.cms" class="w-full h-48 object-cover rounded-lg mb-4" alt="Generic Medicines">
-            <h3 class="font-bold text-xl mb-2">Affordable Generic Medicines</h3>
-            <p class="text-slate-600" data-i18n="benefit1_desc">Save up to 80% on authentic generic medicines from trusted suppliers. No compromises on quality.</p>
-          </div>
-          <div class="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition">
-            <img src="https://www.shutterstock.com/image-photo/data-security-protection-privacy-on-600nw-2377224243.jpg" class="w-full h-48 object-cover rounded-lg mb-4" alt="Secure Vault">
-            <h3 class="font-bold text-xl mb-2">Secure Medical Vault</h3>
-            <p class="text-slate-600" data-i18n="benefit2_desc">Store all your medical records, prescriptions, and documents in one secure, encrypted location.</p>
-          </div>
-          <div class="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition">
-            <div class="w-full h-48 rounded-lg mb-4 bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center overflow-hidden">
-              <img src="https://cdn.prod.website-files.com/5ef27cb65411b70949a151e9/61cd9500009471ec4096c045_Frame%208668.png" class="w-full h-full object-cover" alt="Order Tracking">
-            </div>
-            <h3 class="font-bold text-xl mb-2">Easy Order Tracking</h3>
-            <p class="text-slate-600" data-i18n="benefit3_desc">Place orders in minutes and track your medicines with real-time delivery updates.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  <!-- Mobile floating cart button -->
-  <button id="mobile-cartBtn" class="hidden sm:hidden fixed bottom-6 right-4 bg-teal-600 text-white p-4 rounded-full shadow-lg z-50">Cart (<span id="mobile-cart-count">0</span>)</button>
-
-    <!-- MEDICINE STORE -->
-    <section id="store" class="hidden">
-      <div class="mb-8">
-        <div class="flex justify-between items-center mb-6 flex-col sm:flex-row sm:items-center gap-3">
-          <div>
-            <h3 class="text-3xl font-bold">Medicine Store</h3>
-            <div id="nearest-kendra" class="text-sm text-slate-500 mt-1 hidden">Ordering by nearest Janaushadi Kendra</div>
-          </div>
-          <button id="view-cart-btn" class="hidden px-6 py-2 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition">View Cart (<span id="cart-count">0</span>)</button>
-        </div>
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <div class="flex-1 relative">
-            <input id="store-search" class="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Search medicines or brand names..." autocomplete="off" />
-            <div id="search-suggestions" class="absolute left-0 top-14 bg-white border border-slate-200 shadow-lg rounded-lg w-full max-h-64 overflow-auto hidden z-40"></div>
-          </div>
-          <button id="search-btn" class="px-6 py-3 bg-amber-500 text-white rounded-lg font-semibold hover:bg-amber-600 transition whitespace-nowrap">🔍 Search</button>
-        </div>
-      </div>
-      <div id="store-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-    </section>
-
-    <!-- VAULT -->
-    <section id="vault" class="hidden">
-      <h3 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Health Vault</h3>
-      
-      <!-- ABHA Verification Status -->
-      <div id="abha-verification-box" class="bg-blue-50 border-l-4 border-blue-600 p-4 sm:p-6 rounded-lg shadow mb-4 sm:mb-6">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div class="flex-1">
-            <h4 class="font-bold text-base sm:text-lg text-blue-900">ABHA ID Verification Required</h4>
-            <p class="text-xs sm:text-sm text-blue-700 mt-1">Verify your ABHA ID to enable secure storage on government database.</p>
-          </div>
-          <button id="verify-abha-btn" class="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition whitespace-nowrap text-sm sm:text-base">Verify ABHA ID</button>
-        </div>
-      </div>
-
-      <!-- Upload Section (hidden until verified) -->
-      <div id="upload-section" class="bg-white p-4 sm:p-6 rounded-lg shadow mb-4 sm:mb-6 hidden">
-        <p class="text-xs sm:text-sm text-amber-600 mb-2">⚠️ <b>Demo Note:</b> Uploaded files are temporary and will be cleared between sessions due to Vercel's serverless architecture.</p>
-        <p class="text-sm sm:text-base text-slate-600 mb-3 sm:mb-4">✓ ABHA Verified - Data will be securely saved on the government database.</p>
-        <div class="flex flex-col gap-3 sm:gap-4">
-          <input id="doc-file" type="file" class="w-full px-3 sm:px-4 py-2.5 sm:py-2 border border-slate-300 rounded-lg text-sm sm:text-base" />
-          <button id="upload-doc" class="w-full sm:w-auto px-6 py-2.5 sm:py-2 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition text-base">Upload</button>
-        </div>
-      </div>
-      
-      <div id="vault-list" class="space-y-4"></div>
-    </section>
-
-    <!-- ORDERS -->
-    <section id="orders" class="hidden fade">
-      <h3 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6" data-i18n="my_orders">My Orders</h3>
-      <div id="orders-list" class="space-y-3 sm:space-y-4"></div>
-    </section>
-
-    <!-- CART MODAL -->
-    <div id="cart-modal" class="modal-mobile fixed inset-0 hidden flex items-center justify-center z-50 bg-black bg-opacity-50 p-3">
-      <div class="bg-white rounded-lg p-4 sm:p-8 max-w-2xl w-full max-h-96 overflow-y-auto">
-        <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Shopping Cart</h2>
-        <div id="cart-items-list" class="mb-3 sm:mb-4 space-y-2 sm:space-y-3"></div>
-        <div class="border-t pt-3 sm:pt-4 mb-3 sm:mb-4">
-          <div class="flex justify-between text-base sm:text-lg font-bold">
-            <span>Total:</span>
-            <span>₹<span id="cart-total">0</span></span>
-          </div>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          <button id="continue-shopping" class="flex-1 px-4 py-3 bg-slate-300 rounded-lg font-semibold hover:bg-slate-400 text-sm sm:text-base">Continue Shopping</button>
-          <button id="checkout-btn" class="flex-1 px-4 py-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 text-sm sm:text-base">Proceed to Checkout</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- CHECKOUT MODAL -->
-    <div id="checkout-modal" class="modal-mobile fixed inset-0 hidden flex items-center justify-center z-50 bg-black bg-opacity-50 p-3">
-      <div class="bg-white rounded-lg p-4 sm:p-8 max-w-md w-full">
-        <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Delivery Details</h2>
-        <input id="checkout-name" class="w-full px-3 sm:px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 mb-3 text-sm sm:text-base" placeholder="Full Name" />
-        <input id="checkout-phone" class="w-full px-3 sm:px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 mb-3 text-sm sm:text-base" placeholder="Phone (10 digits)" maxlength="10" />
-        <textarea id="checkout-address" class="w-full px-3 sm:px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 mb-4 text-sm sm:text-base" placeholder="Delivery Address" rows="3"></textarea>
-        <div class="bg-slate-100 p-3 rounded-lg mb-4">
-          <div class="flex justify-between text-xs sm:text-sm mb-1"><span>Subtotal:</span><span>₹<span id="checkout-subtotal">0</span></span></div>
-          <div class="flex justify-between text-xs sm:text-sm mb-2"><span>Shipping:</span><span>Free</span></div>
-          <div class="flex justify-between font-bold text-base sm:text-lg"><span>Total:</span><span>₹<span id="checkout-total">0</span></span></div>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          <button id="back-to-cart" class="flex-1 px-4 py-3 bg-slate-300 rounded-lg font-semibold hover:bg-slate-400 text-sm sm:text-base">Back</button>
-          <button id="proceed-payment" class="flex-1 px-4 py-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 text-sm sm:text-base">Pay Now</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PAYMENT MODAL -->
-    <div id="payment-modal" class="modal-mobile fixed inset-0 hidden flex items-center justify-center z-50 bg-black bg-opacity-50 p-3">
-      <div class="bg-white rounded-lg p-4 sm:p-8 max-w-md w-full">
-        <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Payment</h2>
-        <div class="bg-gradient-to-r from-teal-500 to-teal-700 text-white p-4 rounded-lg mb-4 sm:mb-6">
-          <div class="text-xs sm:text-sm opacity-80">Amount to Pay</div>
-          <div class="text-2xl sm:text-3xl font-bold">₹<span id="payment-amount">0</span></div>
-        </div>
-        <input id="card-number" class="w-full px-3 sm:px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 mb-3 text-sm sm:text-base" placeholder="Card Number" maxlength="19" />
-        <div class="flex gap-2 sm:gap-3 mb-3">
-          <input id="card-expiry" class="flex-1 px-3 sm:px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 text-sm sm:text-base" placeholder="MM/YY" maxlength="5" />
-          <input id="card-cvv" class="w-20 sm:w-24 px-3 sm:px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 text-sm sm:text-base" placeholder="CVV" maxlength="3" />
-        </div>
-        <div class="text-xs text-slate-500 mb-4 p-2 bg-slate-50 rounded">Demo: Any card works (e.g., 4111 1111 1111 1111)</div>
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          <button id="cancel-payment" class="flex-1 px-4 py-3 bg-slate-300 rounded-lg font-semibold hover:bg-slate-400 text-sm sm:text-base">Cancel</button>
-          <button id="pay-now" class="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 text-sm sm:text-base">Pay Now</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- LOGIN MODAL -->
-    <div id="login-modal" class="modal-mobile fixed inset-0 hidden flex items-center justify-center z-50 bg-black bg-opacity-50 p-3">
-      <div class="bg-white rounded-lg p-4 sm:p-8 max-w-md w-full">
-        <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6" data-i18n="login_modal_title">Login with Aadhaar (OTP)</h2>
-        <div class="mt-4">
-          <label class="block text-xs sm:text-sm text-slate-600" data-i18n="aadhaar_label">Aadhaar Number</label>
-          <input id="aadhaar-input" class="w-full mt-1 px-3 py-3 border rounded text-sm sm:text-base" placeholder="123412341234" />
-        </div>
-        <div id="otp-section" class="mt-4 hidden">
-          <label class="block text-xs sm:text-sm text-slate-600" data-i18n="enter_otp">Enter OTP</label>
-          <input id="otp-input" class="w-full mt-1 px-3 py-3 border rounded text-sm sm:text-base" placeholder="6-digit OTP" />
-        </div>
-        <div class="mt-4 flex flex-col sm:flex-row gap-2">
-          <button id="request-otp" class="px-4 py-3 bg-amber-500 text-white rounded font-semibold hover:bg-amber-600 text-sm sm:text-base" data-i18n="request_otp">Request OTP</button>
-          <button id="verify-otp" class="px-4 py-3 bg-teal-600 text-white rounded font-semibold hover:bg-teal-700 hidden text-sm sm:text-base" data-i18n="verify_otp">Verify OTP</button>
-          <button id="close-login" class="sm:ml-auto px-4 py-3 text-slate-600 hover:bg-slate-100 rounded font-semibold text-sm sm:text-base" data-i18n="close">Close</button>
-        </div>
-        <p id="login-help" class="mt-3 text-xs sm:text-sm text-slate-500" data-i18n="login_help">OTP will be shown in server console (dev mode).</p>
-      </div>
-    </div>
-
-    <!-- ABHA ID VERIFICATION MODAL -->
-    <div id="abha-modal" class="modal-mobile fixed inset-0 hidden flex items-center justify-center z-50 bg-black bg-opacity-50 p-3">
-      <div class="bg-white rounded-lg p-4 sm:p-8 max-w-md w-full">
-        <h2 class="text-xl sm:text-2xl font-bold mb-2">ABHA ID Verification</h2>
-        <p class="text-xs sm:text-sm text-slate-600 mb-4 sm:mb-6">Verify your ABHA ID to securely store medical records on the government database.</p>
-        <div class="mt-4">
-          <label class="block text-xs sm:text-sm text-slate-600">ABHA ID (10 digits)</label>
-          <input id="abha-input" class="w-full mt-1 px-3 py-3 border rounded focus:outline-none focus:border-teal-600 text-sm sm:text-base" placeholder="1234567890" maxlength="10" />
-        </div>
-        <div class="mt-4 flex flex-col sm:flex-row gap-2">
-          <button id="verify-abha" class="flex-1 px-4 py-3 bg-teal-600 text-white rounded font-semibold hover:bg-teal-700 text-sm sm:text-base">Verify ABHA</button>
-          <button id="close-abha" class="px-4 py-3 bg-slate-300 rounded font-semibold hover:bg-slate-400 text-sm sm:text-base">Cancel</button>
-        </div>
-        <div id="abha-status" class="mt-4 text-xs sm:text-sm hidden p-3 rounded-lg"></div>
-      </div>
-    </div>
-  </main>
-
-  <script>
-    const API_BASE = '/api';
-    const tokenKey = 'hn_token';
-
-    // i18n translations
-    const translations = {
-      en: {
-        store: 'Store', vault: 'Vault', orders: 'Orders', login: 'Login', logout: 'Logout',
-        landing_title: 'Your Trusted Digital Health Partner',
-        landing_sub: 'Access affordable generic medicines, securely store your medical documents, and manage your health with ease.',
-        get_started: 'Get Started', learn_more: 'Learn More',
-        benefit1_desc: 'Save up to 80% on authentic generic medicines from trusted suppliers. No compromises on quality.',
-        benefit2_desc: 'Store all your medical records, prescriptions, and documents in one secure, encrypted location.',
-        benefit3_desc: 'Place orders in minutes and track your medicines with real-time delivery updates.',
-        login_modal_title: 'Login with Aadhaar (OTP)', aadhaar_label: 'Aadhaar Number', enter_otp: 'Enter OTP', request_otp: 'Request OTP', verify_otp: 'Verify OTP', close: 'Close', login_help: 'OTP will be shown in server console (dev mode).',
-        my_orders: 'My Orders', added_to_cart: 'Add to Cart', enter_aadhaar: 'Enter Aadhaar', enter_aadhaar_otp: 'Enter aadhaar and otp', login_success: 'Login successful — welcome '
-      },
-      hi: {
-        store: 'स्टोर', vault: 'वॉल्ट', orders: 'ऑर्डर्स', login: 'लॉगिन', logout: 'लॉगआउट',
-        landing_title: 'आपका विश्वसनीय डिजिटल स्वास्थ्य साथी',
-        landing_sub: 'सस्ती सामान्य दवाइयों तक पहुंचें, अपने चिकित्सा दस्तावेज़ सुरक्षित रखें और आसानी से अपने स्वास्थ्य का प्रबंधन करें।',
-        get_started: 'शुरू करें', learn_more: 'और जानें',
-        benefit1_desc: 'विश्वसनीय आपूर्तिकर्ताओं से सामान्य दवाइयों पर 80% तक बचाएं। गुणवत्ता में कोई समझौता नहीं।',
-        benefit2_desc: 'अपने सभी चिकित्सा रिकॉर्ड, प्रिस्क्रिप्शन और दस्तावेज़ एक सुरक्षित स्थान पर रखें।',
-        benefit3_desc: 'कुछ ही मिनटों में ऑर्डर दें और रीयल-टाइम डिलीवरी अपडेट के साथ ट्रैक करें।',
-        login_modal_title: 'आधार से लॉगिन (OTP)', aadhaar_label: 'आधार नंबर', enter_otp: 'OTP दर्ज करें', request_otp: 'OTP अनुरोध करें', verify_otp: 'OTP सत्यापित करें', close: 'बंद करें', login_help: 'OTP सर्वर कंसोल में दिखेगा (डिव मोड)।',
-        my_orders: 'मेरे ऑर्डर्स', added_to_cart: 'कार्ट में जोड़ें', enter_aadhaar: 'आधार दर्ज करें', enter_aadhaar_otp: 'आधार और OTP दर्ज करें', login_success: 'लॉगिन सफल — स्वागत है '
-      }
-    };
-
-    let currentLang = 'en';
-    let isLoggedIn = false;
-    let CART = [];
-    let checkoutData = {};
-    let abhaVerified = false;
-
-    const brandToGenericMap = {
-      'crocin': 'paracetamol', 'dolo': 'paracetamol', 'brufen': 'ibuprofen', 'ibugesic': 'ibuprofen',
-      'ecosprin': 'aspirin', 'amoxil': 'amoxicillin', 'zithromax': 'azithromycin', 'cipro': 'ciprofloxacin',
-      'glycomet': 'metformin', 'glucophage': 'metformin', 'amaryl': 'glimepiride', 'norvasc': 'amlodipine',
-      'cozaar': 'losartan', 'zestril': 'lisinopril', 'lipitor': 'atorvastatin', 'crestor': 'rosuvastatin',
-      'zocor': 'simvastatin', 'losec': 'omeprazole', 'prilosec': 'omeprazole', 'pantocid': 'pantoprazole',
-      'lanzol': 'lansoprazole', 'eltroxin': 'levothyroxine', 'zoloft': 'sertraline', 'prozac': 'fluoxetine',
-      'celexa': 'citalopram', 'lexapro': 'escitalopram', 'xanax': 'alprazolam', 'valium': 'diazepam',
-      'klonopin': 'clonazepam', 'deltasone': 'prednisone', 'ventolin': 'salbutamol', 'singulair': 'montelukast',
-      'zyrtec': 'cetirizine', 'claritin': 'loratadine', 'xyzal': 'levocetirizine', 'rhinocort': 'budesonide',
-      'calcirol': 'vitamin d3', 'calpol': 'calcium carbonate', 'centrum': 'multivitamin'
-    };
-
-    function setLanguage(lang){
-      currentLang = lang;
-      document.querySelectorAll('[data-i18n]').forEach(el=>{
-        const key = el.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
-      });
-    }
-
-    function updateLoginState(){
-      const token = localStorage.getItem(tokenKey);
-      isLoggedIn = !!token;
-      const loginBtn = document.getElementById('login-nav');
-      const logoutBtn = document.getElementById('logout-btn');
-      const navStore = document.getElementById('nav-store');
-      const navVault = document.getElementById('nav-vault');
-      const navOrders = document.getElementById('nav-orders');
-      const viewCartBtn = document.getElementById('view-cart-btn');
-      const mobileCartBtn = document.getElementById('mobile-cartBtn');
-      if (isLoggedIn){
-        loginBtn.classList.add('hidden');
-        logoutBtn.classList.remove('hidden');
-        navStore.classList.remove('hidden');
-        navVault.classList.remove('hidden');
-        navOrders.classList.remove('hidden');
-        if (viewCartBtn) viewCartBtn.classList.remove('hidden');
-        if (mobileCartBtn) mobileCartBtn.classList.remove('hidden');
-        loadCart();
-      } else {
-        loginBtn.classList.add('hidden');
-        logoutBtn.classList.add('hidden');
-        navStore.classList.add('hidden');
-        navVault.classList.add('hidden');
-        navOrders.classList.add('hidden');
-        if (viewCartBtn) viewCartBtn.classList.add('hidden');
-        if (mobileCartBtn) mobileCartBtn.classList.add('hidden');
-      }
-    }
-
-    function updateCartUI(){
-      const count = document.querySelectorAll('#cart-count');
-      count.forEach(el => el.textContent = CART.length);
-      const mobileCount = document.getElementById('mobile-cart-count');
-      if (mobileCount) mobileCount.textContent = CART.length;
-      const total = CART.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-      const totalEls = document.querySelectorAll('#cart-total, #checkout-total, #checkout-subtotal, #payment-amount');
-      totalEls.forEach(el => el.textContent = total);
-    }
-
-    function loadCart(){
-      const saved = localStorage.getItem('hn_cart_full');
-      CART = saved ? JSON.parse(saved) : [];
-      updateCartUI();
-    }
-
-    function saveCart(){
-      localStorage.setItem('hn_cart_full', JSON.stringify(CART));
-      updateCartUI();
-    }
-
-    // ABHA Verification
-    function checkAbhaStatus(){
-      abhaVerified = localStorage.getItem('hn_abha_verified') === 'true';
-      const verifyBox = document.getElementById('abha-verification-box');
-      const uploadSection = document.getElementById('upload-section');
-      if (abhaVerified){
-        verifyBox.classList.add('hidden');
-        uploadSection.classList.remove('hidden');
-      } else {
-        verifyBox.classList.remove('hidden');
-        uploadSection.classList.add('hidden');
-      }
-    }
-
-    document.getElementById('verify-abha-btn').addEventListener('click', () => {
-      document.getElementById('abha-modal').classList.remove('hidden');
-    });
-
-    document.getElementById('close-abha').addEventListener('click', () => {
-      document.getElementById('abha-modal').classList.add('hidden');
-    });
-
-    document.getElementById('verify-abha').addEventListener('click', async () => {
-      const abhaId = document.getElementById('abha-input').value.trim();
-      if (!abhaId || abhaId.length !== 10 || !/^\d+$/.test(abhaId)){
-        alert('Please enter a valid 10-digit ABHA ID');
-        return;
-      }
-      const statusEl = document.getElementById('abha-status');
-      const verifyBtn = document.getElementById('verify-abha');
-      verifyBtn.disabled = true;
-      verifyBtn.textContent = 'Verifying...';
-      
-      // Simulate verification delay
-      await new Promise(r => setTimeout(r, 1500));
-      
-      // Mark as verified
-      localStorage.setItem('hn_abha_verified', 'true');
-      localStorage.setItem('hn_abha_id', abhaId);
-      abhaVerified = true;
-      
-      statusEl.classList.remove('hidden');
-      statusEl.className = 'mt-4 text-sm hidden p-3 rounded-lg bg-green-100 text-green-800 flex items-center gap-2';
-      statusEl.innerHTML = '✓ ABHA ID verified successfully! Your data will be securely saved on the government database.';
-      
-      setTimeout(() => {
-        document.getElementById('abha-modal').classList.add('hidden');
-        document.getElementById('abha-input').value = '';
-        verifyBtn.disabled = false;
-        verifyBtn.textContent = 'Verify ABHA';
-        checkAbhaStatus();
-      }, 2000);
-    });    // Language buttons
-    document.getElementById('lang-en').addEventListener('click', ()=> setLanguage('en'));
-    document.getElementById('lang-hi').addEventListener('click', ()=> setLanguage('hi'));
-    setLanguage('en');
-
-    // Logout
-    document.getElementById('logout-btn').addEventListener('click', ()=>{
-      localStorage.removeItem(tokenKey);
-      CART = [];
-      localStorage.removeItem('hn_cart_full');
-      updateCartUI();
-      updateLoginState();
-      document.getElementById('landing').classList.remove('hidden');
-      ['store','vault','orders'].forEach(s => document.getElementById(s).classList.add('hidden'));
-      alert('Logged out');
-    });
-
-    // Navigation
-    document.getElementById('cta-login').addEventListener('click', () => showLogin());
-    document.getElementById('login-nav').addEventListener('click', () => showLogin());
-    document.getElementById('nav-store').addEventListener('click', () => showSection('store'));
-    document.getElementById('nav-vault').addEventListener('click', () => showSection('vault'));
-    document.getElementById('nav-orders').addEventListener('click', () => showSection('orders'));
-
-    function showLogin() {
-      document.getElementById('login-modal').classList.remove('hidden');
-    }
-
-    function hideLogin() {
-      document.getElementById('login-modal').classList.add('hidden');
-    }
-
-    document.getElementById('close-login').addEventListener('click', hideLogin);
-
-    // OTP flow
-    document.getElementById('request-otp').addEventListener('click', async () => {
-      const aadhaar = document.getElementById('aadhaar-input').value.trim();
-      if (!aadhaar) return alert(translations[currentLang].enter_aadhaar);
-      const res = await fetch(API_BASE + '/request-otp', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ aadhaar }), credentials: 'same-origin' });
-      const j = await res.json();
-      if (!res.ok) return alert(j.error || 'Error');
-      document.getElementById('otp-section').classList.remove('hidden');
-      document.getElementById('verify-otp').classList.remove('hidden');
-      if (j.otp) {
-        document.getElementById('otp-input').value = j.otp;
-        alert(`OTP sent! Your OTP is: ${j.otp}\n(Auto-filled for convenience)`);
-      } else {
-        alert('OTP requested - check console');
-      }
-    });
-
-    document.getElementById('verify-otp').addEventListener('click', async () => {
-      const aadhaar = document.getElementById('aadhaar-input').value.trim();
-      const otp = document.getElementById('otp-input').value.trim();
-      if (!aadhaar || !otp) return alert(translations[currentLang].enter_aadhaar_otp);
-      const res = await fetch(API_BASE + '/verify-otp', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ aadhaar, otp }), credentials: 'same-origin' });
-      const j = await res.json();
-      if (!res.ok) return alert(j.error || 'Error');
-      if (j.token) localStorage.setItem(tokenKey, j.token);
-      hideLogin();
-      alert(translations[currentLang].login_success + (j.user && j.user.name));
-      updateLoginState();
-      showSection('store');
-      loadStore();
-      // Prompt for location after login (improves nearest-kendra info)
-      try { requestAndSaveLocation(); } catch(e){ /* ignore */ }
-    });
-
-    function showSection(id) {
-      document.getElementById('landing').classList.add('hidden');
-      ['store','vault','orders'].forEach(s => document.getElementById(s).classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      if (id === 'store') loadStore();
-      if (id === 'vault') loadVault();
-      if (id === 'orders') loadOrders();
-    }
-
-    // Cart Modal
-    document.getElementById('view-cart-btn').addEventListener('click', () => {
-      document.getElementById('cart-modal').classList.remove('hidden');
-      renderCartModal();
-    });
-
-    document.getElementById('continue-shopping').addEventListener('click', () => {
-      document.getElementById('cart-modal').classList.add('hidden');
-    });
-
-    function renderCartModal(){
-      const list = document.getElementById('cart-items-list');
-      list.innerHTML = '';
-      if (CART.length === 0){
-        list.innerHTML = '<div class="text-center py-6 sm:py-8 text-slate-600 text-sm sm:text-base">Your cart is empty</div>';
-        return;
-      }
-      CART.forEach((item, idx) => {
-        const el = document.createElement('div');
-        el.className = 'flex items-center justify-between p-3 sm:p-4 bg-slate-50 rounded-lg';
-        el.innerHTML = `
-          <div class="flex-1">
-            <div class="font-semibold text-sm sm:text-base">${item.name}</div>
-            <div class="text-xs sm:text-sm text-slate-600">₹${item.price} × ${item.quantity || 1} = ₹${item.price * (item.quantity || 1)}</div>
-          </div>
-          <button class="px-3 py-2 bg-slate-200 rounded remove-item hover:bg-slate-300 text-xs sm:text-sm font-medium" data-idx="${idx}">Remove</button>`;
-        list.appendChild(el);
-        el.querySelector('.remove-item').addEventListener('click', () => {
-          CART.splice(idx, 1);
-          saveCart();
-          renderCartModal();
-        });
-      });
-    }
-
-    document.getElementById('checkout-btn').addEventListener('click', () => {
-      if (CART.length === 0) return alert('Cart is empty');
-      document.getElementById('cart-modal').classList.add('hidden');
-      document.getElementById('checkout-modal').classList.remove('hidden');
-    });
-
-    // Checkout Modal
-    document.getElementById('back-to-cart').addEventListener('click', () => {
-      document.getElementById('checkout-modal').classList.add('hidden');
-      document.getElementById('cart-modal').classList.remove('hidden');
-    });
-
-    document.getElementById('proceed-payment').addEventListener('click', () => {
-      const name = document.getElementById('checkout-name').value.trim();
-      const phone = document.getElementById('checkout-phone').value.trim();
-      const address = document.getElementById('checkout-address').value.trim();
-      if (!name || !phone || !address) return alert('Please fill all fields');
-      if (!/^\d{10}$/.test(phone)) return alert('Please enter valid 10-digit phone number');
-      
-      checkoutData = { name, phone, address };
-      document.getElementById('checkout-modal').classList.add('hidden');
-      document.getElementById('payment-modal').classList.remove('hidden');
-    });
-
-    // Payment Gateway
-    document.getElementById('cancel-payment').addEventListener('click', () => {
-      document.getElementById('payment-modal').classList.add('hidden');
-      document.getElementById('checkout-modal').classList.remove('hidden');
-    });
-
-    document.getElementById('pay-now').addEventListener('click', async () => {
-      const cardNum = document.getElementById('card-number').value.trim();
-      const expiry = document.getElementById('card-expiry').value.trim();
-      const cvv = document.getElementById('card-cvv').value.trim();
-      
-      if (!cardNum || !expiry || !cvv) return alert('Please fill all card details');
-      if (cardNum.replace(/\s/g, '').length < 13) return alert('Invalid card number');
-      if (cvv.length < 3) return alert('Invalid CVV');
-
-      const payBtn = document.getElementById('pay-now');
-      payBtn.disabled = true;
-      payBtn.textContent = 'Processing...';
-
-      await new Promise(r => setTimeout(r, 2000));
-
-      const token = localStorage.getItem(tokenKey);
-      const total = CART.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-      
-      const orderData = {
-        items: CART,
-        total: total,
-        address: checkoutData.address,
-        customerName: checkoutData.name,
-        customerPhone: checkoutData.phone,
-        paymentId: 'PAY_' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-        paymentStatus: 'completed'
-      };
-
-      const res = await fetch(API_BASE + '/orders', {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', Authorization: 'Bearer ' + token },
-        body: JSON.stringify(orderData),
-        credentials: 'same-origin'
-      });
-
-      const j = await res.json();
-      
-      if (res.ok){
-        alert('Payment successful! Order #' + j.id + ' placed');
-        CART = [];
-        saveCart();
-        document.getElementById('payment-modal').classList.add('hidden');
-        document.getElementById('checkout-name').value = '';
-        document.getElementById('checkout-phone').value = '';
-        document.getElementById('checkout-address').value = '';
-        document.getElementById('card-number').value = '';
-        document.getElementById('card-expiry').value = '';
-        document.getElementById('card-cvv').value = '';
-        showSection('orders');
-        loadOrders();
-      } else {
-        alert('Payment failed: ' + (j.error || 'Unknown error'));
-      }
-
-      payBtn.disabled = false;
-      payBtn.textContent = 'Pay Now';
-    });
-
-    // Store
-    async function loadStore(){
-      const q = document.getElementById('store-search').value || '';
-      const res = await fetch(API_BASE + '/medicines');
-      const j = await res.json();
-      const grid = document.getElementById('store-grid');
-      grid.innerHTML = '';
-      
-      const meds = Array.isArray(j) ? j : (j.medicines || []);
-      const filtered = q ? meds.filter(m => m.name.toLowerCase().includes(q.toLowerCase())) : meds;
-      
-      filtered.forEach(m => {
-        const cartItem = CART.find(c => c.id === m.id);
-        const qty = cartItem ? (cartItem.quantity || 1) : 0;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Nexus | Decentralized Healthcare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { primary: '#2dd4bf', secondary: '#3b82f6', dark: '#0f172a', panel: '#1e293b' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Outfit', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #0b0f19; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .heading { font-family: 'Outfit', sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .text-gradient { background: linear-gradient(135deg, #2dd4bf, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-active { border-bottom: 2px solid #2dd4bf; color: #2dd4bf; }
         
-        const card = document.createElement('div');
-        card.className = 'p-6 bg-white rounded-lg shadow hover:shadow-xl transition-all';
-        card.innerHTML = `
-          <div class="mb-4">
-            <h4 class="font-bold text-lg">${m.name}</h4>
-            <p class="text-xs text-teal-600 font-semibold">${m.company}</p>
-          </div>
-          <p class="text-sm text-slate-600 mb-4">${m.description || ''}</p>
-          <div class="flex items-center justify-between pt-4 border-t">
-            <div class="text-2xl font-bold text-teal-600">₹${m.price}</div>
-            <div class="flex items-center gap-2">
-              <button class="px-2 py-1 bg-slate-200 qty-minus" data-id="${m.id}" ${qty === 0 ? 'style="display:none"' : ''}>−</button>
-              <span class="w-8 text-center qty-display">${qty}</span>
-              <button class="px-2 py-1 bg-amber-500 text-white qty-plus" data-id="${m.id}">+</button>
+        /* Log Drawer Styles */
+        #log-drawer { position: fixed; bottom: 1rem; left: 1rem; width: 320px; max-height: 250px; overflow-y: auto; pointer-events: none; z-index: 50; }
+        .log-entry { font-family: 'Courier New', monospace; font-size: 0.75rem; margin-bottom: 0.25rem; opacity: 0; animation: fadeInLog 0.3s forwards; }
+        .log-tag { color: #2dd4bf; font-weight: bold; }
+        .log-time { color: #64748b; }
+        @keyframes fadeInLog { to { opacity: 1; } }
+
+        /* Arc node active state */
+        .arc-node { transition: all 0.3s; }
+        .arc-node.pulse { box-shadow: 0 0 25px rgba(45, 212, 191, 0.6); border-color: #2dd4bf; transform: scale(1.05); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-40 w-full px-6 py-4 flex justify-between items-center shadow-lg">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('landing')">
+            <div class="p-2 bg-gradient-to-br from-teal-400 to-blue-500 rounded-lg shadow-lg shadow-teal-500/20">
+                <i data-lucide="activity" class="text-white"></i>
             </div>
-          </div>`;
-        grid.appendChild(card);
+            <span class="heading font-bold text-xl tracking-wide">Health <span class="text-gradient">Nexus</span></span>
+        </div>
+        <div class="hidden md:flex gap-8 text-sm font-medium text-slate-300">
+            <button class="nav-btn nav-active hover:text-white transition-colors" data-target="landing" onclick="switchView('landing')">Overview</button>
+            <button class="nav-btn hover:text-white transition-colors" data-target="architecture" onclick="switchView('architecture')">Architecture Tracker</button>
+            <button class="nav-btn hover:text-white transition-colors" data-target="store" onclick="switchView('store')">Janaushadhi Store</button>
+            <button class="nav-btn hover:text-white transition-colors" data-target="vault" onclick="switchView('vault')">Health Vault</button>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="toggleCart()" class="relative p-2 rounded-full hover:bg-slate-800 transition">
+                <i data-lucide="shopping-cart"></i>
+                <span id="cart-badge" class="absolute top-0 right-0 bg-teal-500 text-xs font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+            </button>
+            <button id="auth-btn" onclick="initAuthSimulation()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full text-sm font-semibold transition">
+                Login via Aadhaar
+            </button>
+        </div>
+    </nav>
 
-        card.querySelector('.qty-plus').addEventListener('click', () => {
-          let item = CART.find(c => c.id === m.id);
-          if (!item) {
-            item = { ...m, quantity: 1 };
-            CART.push(item);
-          } else {
-            item.quantity = (item.quantity || 1) + 1;
-          }
-          saveCart();
-          loadStore();
-        });
+    <!-- Main Content Container -->
+    <main class="flex-1 relative">
+        
+        <!-- View: Landing -->
+        <section id="view-landing" class="view-section py-20 px-6 max-w-6xl mx-auto flex flex-col items-center text-center">
+            <div class="inline-block px-4 py-1.5 rounded-full glass border-teal-500/30 text-teal-300 text-sm font-semibold mb-6 animate-pulse">
+                Version 3.0: Intelligence Prototype Subsystem Active
+            </div>
+            <h1 class="heading text-5xl md:text-7xl font-bold mb-6">Unified <span class="text-gradient">Healthcare</span> Automation</h1>
+            <p class="text-lg text-slate-400 max-w-2xl mb-12">A government-grade orchestration platform integrating identity verification, AI-powered prescription processing, and intelligent supply routing.</p>
+            
+            <div class="grid md:grid-cols-3 gap-6 w-full mt-10">
+                <div class="glass p-6 rounded-2xl text-left hover:-translate-y-1 transition duration-300">
+                    <i data-lucide="brain-circuit" class="text-teal-400 mb-4 w-8 h-8"></i>
+                    <h3 class="heading font-bold text-xl mb-2">AI Prescription Engine</h3>
+                    <p class="text-slate-400 text-sm">Automated extraction and verification mapping to generic alternatives for maximum savings.</p>
+                </div>
+                <div class="glass p-6 rounded-2xl text-left hover:-translate-y-1 transition duration-300">
+                    <i data-lucide="fingerprint" class="text-blue-400 mb-4 w-8 h-8"></i>
+                    <h3 class="heading font-bold text-xl mb-2">Aadhaar / ABHA Bound</h3>
+                    <p class="text-slate-400 text-sm">Decentralized authentication and vaulting ensuring data integrity across nodes.</p>
+                </div>
+                <div class="glass p-6 rounded-2xl text-left hover:-translate-y-1 transition duration-300">
+                    <i data-lucide="route" class="text-indigo-400 mb-4 w-8 h-8"></i>
+                    <h3 class="heading font-bold text-xl mb-2">Smart Point Routing</h3>
+                    <p class="text-slate-400 text-sm">Inventory verification and delivery dispatch optimized for Janaushadhi Kendras.</p>
+                </div>
+            </div>
+        </section>
 
-        const minusBtn = card.querySelector('.qty-minus');
-        if (minusBtn){
-          minusBtn.addEventListener('click', () => {
-            let item = CART.find(c => c.id === m.id);
-            if (item){
-              item.quantity = Math.max(0, (item.quantity || 1) - 1);
-              if (item.quantity === 0) CART = CART.filter(c => c.id !== m.id);
-              saveCart();
-              loadStore();
-            }
-          });
+        <!-- View: Architecture Tracker -->
+        <section id="view-architecture" class="view-section hidden py-10 px-6 max-w-7xl mx-auto">
+            <div class="mb-10">
+                <h2 class="heading text-3xl font-bold mb-2">System <span class="text-gradient">Flow Telemetry</span></h2>
+                <p class="text-slate-400 text-sm">Real-time status of 13 interconnected intelligence modules.</p>
+            </div>
+            <div class="glass p-8 rounded-3xl border-slate-700/50">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center" id="arc-grid">
+                    <!-- Nodes injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Janaushadhi Store -->
+        <section id="view-store" class="view-section hidden py-10 px-6 max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+                <div>
+                    <h2 class="heading text-3xl font-bold mb-2">Unified <span class="text-gradient">Dispensary</span></h2>
+                    <p class="text-slate-400 text-sm">Search medicines and view AI-suggested generic alternatives.</p>
+                </div>
+                <div class="relative w-full md:w-96">
+                    <i data-lucide="search" class="absolute left-3 top-3 text-slate-500 w-5 h-5"></i>
+                    <input type="text" id="search-input" oninput="searchMedicine()" placeholder="Search compositions..." class="w-full bg-slate-800/80 border border-slate-700 text-white rounded-xl py-2.5 pl-10 pr-4 focus:outline-none focus:border-teal-500 transition">
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="medicine-grid">
+                <!-- Medicines injected via JS -->
+            </div>
+        </section>
+
+        <!-- View: Health Vault -->
+        <section id="view-vault" class="view-section hidden py-10 px-6 max-w-5xl mx-auto">
+            <div class="mb-10 text-center">
+                <h2 class="heading text-3xl font-bold mb-2">Personal <span class="text-gradient">Health Vault</span> (ABHA)</h2>
+                <p class="text-slate-400 text-sm">Secure storage validated via AI compliance checks.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Upload Area -->
+                <div class="glass p-8 rounded-3xl border-dashed border-2 border-slate-600 hover:border-teal-500 transition flex flex-col items-center justify-center text-center cursor-pointer min-h-[300px]" onclick="simulatePrescriptionUpload()">
+                    <div id="upload-idle">
+                        <i data-lucide="upload-cloud" class="w-12 h-12 text-teal-400 mb-4 mx-auto"></i>
+                        <h3 class="font-bold text-lg mb-1">Upload Prescription</h3>
+                        <p class="text-sm text-slate-500">JPG, PNG or PDF (Max 5MB)</p>
+                    </div>
+                    <div id="upload-processing" class="hidden w-full px-4">
+                        <i data-lucide="loader" class="w-10 h-10 text-teal-400 mb-4 mx-auto animate-spin"></i>
+                        <h3 class="font-bold text-teal-300 text-sm mb-2" id="ai-status-text">Validating Signatures...</h3>
+                        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                            <div class="bg-teal-500 h-1.5 w-0 transition-all duration-300" id="ai-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Verification Data -->
+                <div class="glass p-6 rounded-3xl border-slate-700/50 flex flex-col justify-between" id="ai-result-panel">
+                    <div>
+                        <div class="flex items-center gap-2 mb-6 text-slate-400 pb-4 border-b border-slate-800">
+                            <i data-lucide="shield-check" class="text-teal-500"></i>
+                            <span class="text-sm font-semibold tracking-wide uppercase">AI Compliance Analysis</span>
+                        </div>
+                        <div class="text-slate-500 text-sm italic" id="ai-empty-state">Waiting for prescription upload...</div>
+                        <div id="ai-data-result" class="hidden space-y-4">
+                            <div>
+                                <span class="text-xs text-slate-500 uppercase tracking-wide">Extracted Entities</span>
+                                <div class="font-medium text-white flex items-center gap-2 mt-1">
+                                    <span>Paracetamol 500mg</span>
+                                    <span class="px-2 py-0.5 bg-slate-800 text-xs rounded text-slate-400"><del>₹45</del> Branded</span>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-teal-500/10 border border-teal-500/20 rounded-xl">
+                                <span class="text-xs text-teal-300 font-bold uppercase tracking-wide"><i data-lucide="zap" class="inline w-3 h-3 mr-1"></i>Generic Alternative Found</span>
+                                <div class="font-medium text-white mt-1">Dolo 650 (PMBJP Substitute)</div>
+                                <div class="text-xs text-teal-400 mt-1">Cost: ₹5.00 — Savings: 88%</div>
+                                <button onclick="addToCart(mockMedicines[0]); toggleCart();" class="mt-3 w-full py-2 bg-teal-500 hover:bg-teal-600 text-white rounded text-sm font-semibold shadow border-0 transition">Auto-add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Cart Sidebar / Modal -->
+    <div id="cart-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden transition-opacity">
+        <div class="absolute right-0 top-0 bottom-0 w-full md:w-96 bg-slate-900 border-l border-slate-800 p-6 flex flex-col transform translate-x-full transition-transform duration-300" id="cart-drawer">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+                <h3 class="heading font-bold text-xl flex items-center gap-2"><i data-lucide="shopping-bag"></i> Cart</h3>
+                <button onclick="toggleCart()" class="text-slate-400 hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <div id="cart-items" class="flex-1 overflow-y-auto space-y-4">
+                <!-- Cart items JS -->
+            </div>
+            <div class="pt-6 border-t border-slate-800 mt-auto">
+                <div class="flex justify-between text-slate-300 mb-2"><span>Subtotal:</span> <span id="cart-subtotal" class="font-bold">₹0.00</span></div>
+                <div class="flex justify-between text-teal-400 mb-4 text-xs"><span>Delivery:</span> <span>Free via Smart Routing</span></div>
+                <button onclick="simulateCheckout()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-xl font-bold shadow-lg hover:shadow-teal-500/25 transition">
+                    Checkout & Route Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Log Drawer (Intelligence Console) -->
+    <div id="log-drawer" class="glass rounded-lg p-3 pt-6 relative border-slate-700">
+        <div class="absolute top-2 left-3 text-[10px] text-slate-500 uppercase tracking-widest font-bold">System Telemetry</div>
+        <div id="log-container" class="flex flex-col justify-end min-h-[100px]"></div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // System Architecture Modules Array
+        const modules = [
+            { id: 'ui', name: 'UI / Client', icon: 'monitor' },
+            { id: 'auth', name: 'Auth & Encryption', icon: 'lock' },
+            { id: 'vault', name: 'Health Vault', icon: 'database' },
+            { id: 'search', name: 'AI Search Engine', icon: 'search' },
+            { id: 'verify', name: 'Prescription Verify', icon: 'file-check-2' },
+            { id: 'presc_ai', name: 'Pattern extraction', icon: 'brain-circuit' },
+            { id: 'sub', name: 'Generic Substitution', icon: 'repeat' },
+            { id: 'order', name: 'Order Processing', icon: 'shopping-cart' },
+            { id: 'payment', name: 'Payment Gateway', icon: 'credit-card' },
+            { id: 'route', name: 'Smart Dispatch', icon: 'network' },
+            { id: 'stock', name: 'Inventory Ledger', icon: 'boxes' },
+            { id: 'deliv', name: 'Delivery Tracking', icon: 'truck' },
+            { id: 'notif', name: 'Notification Hub', icon: 'bell' }
+        ];
+
+        // Datasets
+        const mockMedicines = [
+            { id: 'm1', name: 'Paracetamol 500mg', generic: 'Paracetamol', price: 5, stock: 450, brand: 'Generic (PMBJP)' },
+            { id: 'm2', name: 'Amoxicillin 250mg', generic: 'Amoxicillin', price: 12, stock: 120, brand: 'Generic (PMBJP)' },
+            { id: 'm3', name: 'Cetirizine 10mg', generic: 'Cetirizine', price: 2.5, stock: 800, brand: 'Generic (PMBJP)' },
+            { id: 'm4', name: 'Atorvastatin 20mg', generic: 'Atorvastatin', price: 18, stock: 300, brand: 'Generic (PMBJP)' },
+            { id: 'm5', name: 'Metformin 500mg', generic: 'Metformin', price: 6, stock: 650, brand: 'Generic (PMBJP)' }
+        ];
+
+        let cart = [];
+        let isAuth = false;
+
+        // UI Management
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${viewId}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('nav-active'));
+            document.querySelector(`.nav-btn[data-target="${viewId}"]`)?.classList.add('nav-active');
+            
+            sysLog(`[Navigation] Transitioned to ${viewId.toUpperCase()} view`, 'ui');
+            pulseModule('ui');
         }
 
-        VanillaTilt.init(card, { max: 5, speed: 300 });
-      });
-    }
+        // System Log Simulator
+        function sysLog(message, moduleId = null) {
+            const container = document.getElementById('log-container');
+            const time = new Date().toLocaleTimeString([], {hour12: false});
+            const tag = moduleId ? `[${moduleId.toUpperCase()}]` : '[SYSTEM]';
+            
+            const el = document.createElement('div');
+            el.className = 'log-entry';
+            el.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-tag">${tag}</span> ${message}`;
+            
+            container.appendChild(el);
+            if(container.children.length > 6) container.removeChild(container.firstChild);
+            container.scrollTop = container.scrollHeight;
+            
+            if(moduleId) pulseModule(moduleId);
+        }
 
-    // Search
-    document.getElementById('store-search').addEventListener('input', () => loadStore());
+        function buildArchitectureGrid() {
+            const grid = document.getElementById('arc-grid');
+            modules.forEach(m => {
+                const el = document.createElement('div');
+                el.id = `arc-node-${m.id}`;
+                el.className = 'arc-node glass p-4 rounded-2xl flex flex-col items-center justify-center border border-slate-700/50';
+                el.innerHTML = `<i data-lucide="${m.icon}" class="text-slate-400 mb-2 w-6 h-6 arc-icon transition-colors"></i><span class="text-xs text-slate-300 font-semibold">${m.name}</span>`;
+                grid.appendChild(el);
+            });
+            lucide.createIcons();
+        }
 
-    document.getElementById('search-btn').addEventListener('click', async () => {
-      const q = document.getElementById('store-search').value.trim();
-      if (!q) return alert('Enter a medicine name');
-      
-      const lowerQ = q.toLowerCase();
-      const genericName = brandToGenericMap[lowerQ];
-      
-      if (genericName){
-        document.getElementById('store-search').value = genericName;
-      }
-      loadStore();
-    });
+        function pulseModule(moduleId) {
+            const el = document.getElementById(`arc-node-${moduleId}`);
+            if(!el) return;
+            const icon = el.querySelector('.arc-icon');
+            
+            el.classList.add('pulse');
+            icon.classList.remove('text-slate-400');
+            icon.classList.add('text-teal-400');
+            
+            setTimeout(() => {
+                el.classList.remove('pulse');
+                icon.classList.add('text-slate-400');
+                icon.classList.remove('text-teal-400');
+            }, 800);
+        }
 
-    // Vault
-    async function loadVault(){
-      checkAbhaStatus();
-      const token = localStorage.getItem(tokenKey);
-      const headers = token ? { Authorization: 'Bearer ' + token } : {};
-      const res = await fetch(API_BASE + '/vault', { headers, credentials: 'same-origin' });
-      const j = await res.json();
-      const list = document.getElementById('vault-list');
-      list.innerHTML = '';
-      if (!j || j.length === 0){
-        list.innerHTML = '<div class="p-6 bg-slate-50 rounded-lg text-center text-slate-600">No documents uploaded yet</div>';
-        return;
-      }
-      j.forEach(d => {
-        const el = document.createElement('div');
-        el.className = 'p-6 bg-white rounded-lg shadow flex items-center justify-between';
-        el.innerHTML = `
-          <div>
-            <div class="font-bold">${d.originalname}</div>
-            <div class="text-sm text-slate-600">${new Date(d.uploadedAt).toLocaleDateString()}</div>
-          </div>
-          <button class="px-4 py-2 text-red-600 font-semibold delete-doc" data-id="${d.id}">Delete</button>`;
-        list.appendChild(el);
-        el.querySelector('.delete-doc').addEventListener('click', async () => {
-          if (!confirm('Delete this document?')) return;
-          const res2 = await fetch(API_BASE + '/vault/delete?id=' + d.id, { method: 'DELETE', headers, credentials: 'same-origin' });
-          if (res2.ok) { 
-            alert('Document deleted successfully'); 
-            loadVault(); 
-          } else { 
-            const err = await res2.json(); 
-            if (err.error.includes('previous session')) {
-              alert('This document was uploaded in a previous session and is no longer available.\n\nNote: Files are temporary on this demo deployment.');
+        // Core Functions
+        function initAuthSimulation() {
+            if(isAuth) return;
+            sysLog('Initiating Aadhaar OTP Request...', 'auth');
+            const btn = document.getElementById('auth-btn');
+            btn.innerText = "Authenticating...";
+            
+            setTimeout(() => {
+                sysLog('OTP verified. Fetching ABHA data securely.', 'auth');
+                setTimeout(() => {
+                    isAuth = true;
+                    btn.classList.replace('bg-slate-800', 'bg-teal-600');
+                    btn.innerText = "Verified ABHA ID";
+                    sysLog('Authentication successful.', 'vault');
+                    document.querySelector('.nav-btn[data-target="vault"]').classList.remove('hidden');
+                }, 1000);
+            }, 1200);
+        }
+
+        function renderStore(medicines) {
+            const grid = document.getElementById('medicine-grid');
+            grid.innerHTML = '';
+            medicines.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'glass p-5 rounded-2xl border-slate-700/50 flex flex-col justify-between hover:border-teal-500 transition';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg text-white">${m.name}</h3>
+                            <span class="px-2 py-1 bg-blue-500/20 text-blue-300 text-[10px] uppercase font-bold rounded">${m.brand}</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4 font-mono">Stock: ${m.stock} Units</p>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <span class="text-xl font-bold text-teal-400">₹${m.price.toFixed(2)}</span>
+                        <button onclick="addToCart('${m.id}')" class="p-2 bg-slate-800 hover:bg-teal-600 rounded-lg text-white transition">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+            sysLog('Fetched catalog mapped to generic inventory.', 'search');
+        }
+
+        function searchMedicine() {
+            const q = document.getElementById('search-input').value.toLowerCase();
+            sysLog(`Searching index pipeline for "${q}"`, 'search');
+            renderStore(mockMedicines.filter(m => m.name.toLowerCase().includes(q) || m.generic.toLowerCase().includes(q)));
+        }
+
+        function addToCart(idOrObj) {
+            let itemStr;
+            if(typeof idOrObj === 'string') {
+                const m = mockMedicines.find(x => x.id === idOrObj);
+                cart.push(m);
+                itemStr = m.name;
             } else {
-              alert('Delete failed: ' + (err.error || 'Unknown error')); 
+                cart.push(idOrObj); 
+                itemStr = idOrObj.name;
             }
-            loadVault();
-          }
-        });
-      });
-    }
-
-    // Location helpers: request browser geolocation, reverse-geocode to city name
-    async function requestAndSaveLocation(){
-      if (!navigator.geolocation) return;
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        // store coordinates
-        const loc = { lat, lon };
-        localStorage.setItem('hn_location_coords', JSON.stringify(loc));
-        // reverse geocode with Nominatim
-        try {
-          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
-          const r = await fetch(url, { headers: { 'User-Agent': 'health-nexus-demo' } });
-          const data = await r.json();
-          const city = data.address && (data.address.city || data.address.town || data.address.village || data.address.county || data.address.state) || '';
-          localStorage.setItem('hn_location_name', city || '');
-          updateLocationUI();
-        } catch (e) {
-          localStorage.setItem('hn_location_name', '');
-          updateLocationUI();
-        }
-      }, (err) => {
-        // permission denied or error
-        localStorage.removeItem('hn_location_coords');
-        localStorage.removeItem('hn_location_name');
-        updateLocationUI();
-      }, { enableHighAccuracy: false, timeout: 10000 });
-    }
-
-    function updateLocationUI(){
-      const name = localStorage.getItem('hn_location_name') || '';
-      const locEl = document.getElementById('user-location');
-      const nearestEl = document.getElementById('nearest-kendra');
-      if (name){
-        if (locEl) { locEl.textContent = name; locEl.classList.remove('hidden'); }
-        if (nearestEl) { nearestEl.textContent = `Ordering by nearest Janaushadi Kendra in ${name}`; nearestEl.classList.remove('hidden'); }
-      } else {
-        if (locEl) locEl.classList.add('hidden');
-        if (nearestEl) nearestEl.classList.add('hidden');
-      }
-    }
-
-    // attempt to load saved location on init
-    try { updateLocationUI(); } catch(e){}
-
-    document.getElementById('upload-doc').addEventListener('click', async () => {
-      if (!abhaVerified) return alert('Please verify your ABHA ID first');
-      const file = document.getElementById('doc-file').files[0];
-      if (!file) return alert('Select file');
-      const token = localStorage.getItem(tokenKey);
-      const headers = token ? { Authorization: 'Bearer ' + token } : {};
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await fetch(API_BASE + '/vault', { method: 'POST', headers, body: fd, credentials: 'same-origin' });
-      const j = await res.json();
-      if (res.ok) {
-        alert('Document uploaded');
-        document.getElementById('doc-file').value = '';
-        loadVault();
-      } else {
-        alert(j.error || 'Error');
-      }
-    });
-
-    // Orders
-    async function loadOrders(){
-      const token = localStorage.getItem(tokenKey);
-      const headers = token ? { Authorization: 'Bearer ' + token } : {};
-      const res = await fetch(API_BASE + '/orders', { headers, credentials: 'same-origin' });
-      const j = await res.json();
-      const list = document.getElementById('orders-list');
-      list.innerHTML = '';
-      if (!j || j.length === 0){
-        list.innerHTML = '<div class="p-4 sm:p-6 bg-slate-50 rounded-lg text-center text-slate-600 text-sm sm:text-base">No orders yet</div>';
-        return;
-      }
-
-      // Sort recent orders first
-      try { j.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)); } catch(e){}
-
-      j.forEach(o => {
-        const daysAgo = Math.floor((Date.now() - new Date(o.createdAt).getTime()) / (1000 * 60 * 60 * 24));
-        const status = daysAgo < 1 ? 'Processing' : daysAgo < 3 ? 'Shipped' : 'Delivered';
-        const progress = daysAgo < 1 ? 25 : daysAgo < 3 ? 75 : 100;
-
-        // Build a friendly title based on item names
-        let title = '';
-        if (o.items && o.items.length > 0){
-          if (o.items.length === 1) title = o.items[0].name;
-          else if (o.items.length === 2) title = o.items[0].name + ', ' + o.items[1].name;
-          else title = o.items[0].name + ', ' + (o.items[1] ? o.items[1].name : '') + ', etc.';
-        } else {
-          title = 'Order';
+            updateCartUI();
+            sysLog(`Added ${itemStr} to dynamic cart.`, 'ui');
+            anime({ targets: '#cart-badge', scale: [1.5, 1], duration: 400 });
         }
 
-        const el = document.createElement('div');
-        el.className = 'p-3 sm:p-6 bg-white rounded-lg shadow';
-        el.innerHTML = `
-          <div class="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-0 mb-3">
-            <div class="flex-1">
-              <div class="font-bold text-base sm:text-lg">${title}</div>
-              <div class="text-xs text-slate-600 mt-1">Order #${o.id}</div>
-              <div class="text-xs text-slate-600">${new Date(o.createdAt).toLocaleString()}</div>
-              <div class="text-xs sm:text-sm text-slate-500 mt-1">${o.items.length} items - ₹${o.total}</div>
-            </div>
-            <span class="px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap self-start">${status}</span>
-          </div>
-          <div class="mb-3">
-            <div class="h-2 bg-slate-200 rounded-full overflow-hidden">
-              <div class="h-full bg-teal-600" style="width: ${progress}%"></div>
-            </div>
-          </div>
-          <div class="flex flex-col sm:flex-row gap-2">
-            <button class="px-4 py-3 bg-blue-500 text-white rounded-lg text-sm font-semibold track-order hover:bg-blue-600" data-id="${o.id}">Track Order</button>
-            <button class="px-4 py-3 bg-slate-200 text-slate-800 rounded-lg text-sm font-semibold invoice-btn hover:bg-slate-300" data-id="${o.id}">View Invoice</button>
-          </div>`;
-        list.appendChild(el);
+        function updateCartUI() {
+            const badge = document.getElementById('cart-badge');
+            badge.innerText = cart.length;
+            badge.classList.toggle('hidden', cart.length === 0);
+            
+            const list = document.getElementById('cart-items');
+            list.innerHTML = '';
+            let total = 0;
+            
+            cart.forEach((item, idx) => {
+                total += item.price;
+                list.innerHTML += `
+                    <div class="flex justify-between items-center p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                        <div>
+                            <div class="text-sm font-semibold">${item.name}</div>
+                            <div class="text-xs text-slate-400">₹${item.price.toFixed(2)}</div>
+                        </div>
+                        <button onclick="cart.splice(${idx},1); updateCartUI();" class="text-red-400 hover:text-red-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>`;
+            });
+            document.getElementById('cart-subtotal').innerText = `₹${total.toFixed(2)}`;
+            lucide.createIcons();
+        }
 
-        el.querySelector('.track-order').addEventListener('click', () => {
-          alert(`${title}\nStatus: ${status}\nProgress: ${progress}%\nEstimated Delivery: ${new Date(new Date(o.createdAt).getTime() + 3*24*60*60*1000).toLocaleDateString()}`);
-        });
+        function toggleCart() {
+            const modal = document.getElementById('cart-modal');
+            const drawer = document.getElementById('cart-drawer');
+            if(modal.classList.contains('hidden')){
+                modal.classList.remove('hidden');
+                setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
+            } else {
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
 
-        el.querySelector('.invoice-btn').addEventListener('click', () => {
-          const html = `<html><body style="font-family:Arial"><h1>INVOICE</h1><p><b>Order:</b> ${o.id}</p><p><b>Date:</b> ${new Date(o.createdAt).toLocaleDateString()}</p><p><b>Customer:</b> ${o.customerName}</p><p><b>Address:</b> ${o.address}</p><table border="1" style="width:100%;border-collapse:collapse"><tr><th>Item</th><th>Qty</th><th>Price</th></tr>${o.items.map(i => `<tr><td>${i.name}</td><td>${i.quantity || 1}</td><td>₹${i.price}</td></tr>`).join('')}</table><p><b>Total: ₹${o.total}</b></p></body></html>`;
-          const win = window.open('', '', 'width=800,height=600');
-          win.document.write(html);
-          win.print();
-        });
-      });
-    }
+        // complex checkout simulation
+        function simulateCheckout() {
+            if(cart.length === 0) return alert('Cart is empty.');
+            toggleCart();
+            sysLog('Initiating secure checkout pipeline.', 'order');
+            
+            setTimeout(() => {
+                sysLog('Processing Payment Authorization...', 'payment');
+                setTimeout(() => {
+                    sysLog('Payment Secured. Mapping delivery routes.', 'route');
+                    setTimeout(() => {
+                        sysLog('Locating optimal PMBJP hub...', 'stock');
+                        setTimeout(() => {
+                            sysLog('Order dispatched. Triggering notification.', 'deliv');
+                            cart = []; updateCartUI();
+                            alert("Order successfully processed and routed via smart dispatch!");
+                            sysLog('Order complete. DB updated.', 'order');
+                            pulseModule('notif');
+                        }, 1200);
+                    }, 1000);
+                }, 1000);
+            }, 800);
+        }
 
-    // Initialize
-    updateLoginState();
-    loadCart();
-    // mobile cart button
-    const mobileCartBtn = document.getElementById('mobile-cartBtn');
-    if (mobileCartBtn){
-      mobileCartBtn.addEventListener('click', () => { document.getElementById('cart-modal').classList.remove('hidden'); renderCartModal(); });
-    }
-    // keep mobile cart opacity in sync
-    try { updateCartUI(); } catch(e){}
-  </script>
+        // Vault AI Simulation
+        function simulatePrescriptionUpload() {
+            if(!isAuth) return alert("Please authenticate via Aadhaar first.");
+            
+            document.getElementById('upload-idle').classList.add('hidden');
+            document.getElementById('upload-processing').classList.remove('hidden');
+            const text = document.getElementById('ai-status-text');
+            const bar = document.getElementById('ai-progress-bar');
+            
+            sysLog('Uploading document to secure Vault blob storage...', 'vault');
+            
+            // Animation sequence
+            setTimeout(() => {
+                bar.style.width = '30%'; text.innerText = "Extracting OCR Metadata...";
+                sysLog('OCR engine parsing document context.', 'verify');
+                
+                setTimeout(() => {
+                    bar.style.width = '70%'; text.innerText = "Running AI Entity Recognition...";
+                    sysLog('Detecting: [Brand: Crocin] -> [Molecule: Paracetamol]', 'presc_ai');
+                    
+                    setTimeout(() => {
+                        bar.style.width = '100%'; text.innerText = "Matching Generic Substitutes...";
+                        sysLog('Cost optimization module substituting ingredients.', 'sub');
+                        
+                        setTimeout(() => {
+                            document.getElementById('upload-processing').classList.add('hidden');
+                            document.getElementById('upload-idle').classList.remove('hidden');
+                            
+                            document.getElementById('ai-empty-state').classList.add('hidden');
+                            document.getElementById('ai-data-result').classList.remove('hidden');
+                            sysLog('Validation complete. Generating response UI.', 'ui');
+                            
+                            // Highlight the success area
+                            anime({
+                                targets: '#ai-result-panel',
+                                borderColor: ['rgba(51, 65, 85, 0.5)', '#2dd4bf', 'rgba(51, 65, 85, 0.5)'],
+                                duration: 1500,
+                                easing: 'easeInOutQuad'
+                            });
+                        }, 1000);
+                    }, 1200);
+                }, 1200);
+            }, 800);
+        }
+
+        // Startup
+        buildArchitectureGrid();
+        renderStore(mockMedicines);
+        sysLog('Initialization complete Core modules online.');
+    </script>
 </body>
 </html>
