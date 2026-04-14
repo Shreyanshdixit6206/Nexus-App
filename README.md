@@ -1,38 +1,36 @@
-# Health NEXUS - Prototype
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-This workspace contains a minimal backend (Express) and a responsive frontend prototype for the Health NEXUS final-year project.
+## Getting Started
 
-Overview
-- Backend: Node.js + Express serving a simple JSON-store and endpoints for OTP login (Aadhaar based), medicines, orders, and vault uploads.
-- Frontend: `frontend/health-nexus.html` — Tailwind CSS, small JS that calls the backend API.
+First, run the development server:
 
-Quick start (Windows PowerShell)
-
-1. Install dependencies
-
-```powershell
-cd workspace/server
-npm install
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-2. Start the server
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```powershell
-npm start
-# Server listens on http://localhost:3000
-```
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-3. Open the frontend
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Open `http://localhost:3000/frontend/health-nexus.html` in your browser (or open the file directly: `workspace/frontend/health-nexus.html`).
+## Learn More
 
-Dev notes
-- Sample Aadhaar: `123412341234` (no password). Request OTP from the login dialog — OTP is printed on the server console and also returned in the API response as `devOtp` for convenience.
-- Orders and vault metadata are stored in `server/data/*.json`.
-- Uploaded files are saved to `server/uploads/`.
+To learn more about Next.js, take a look at the following resources:
 
-Security
-- This project is a prototype. Do not use this code in production as-is.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Next steps
-- Manual testing and polish UI details per your design (I preserved the prototype look and added OTP flow and small tilt effects to store cards).
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

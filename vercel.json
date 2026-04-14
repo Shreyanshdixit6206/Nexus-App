@@ -1,8 +1,8 @@
 {
-  "buildCommand": "cd nexus-webapp && npm run build",
-  "devCommand": "cd nexus-webapp && npm run dev",
-  "installCommand": "cd nexus-webapp && npm install",
-  "outputDirectory": "nexus-webapp/.next",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
   "framework": "nextjs",
   "env": {
     "GEMINI_API_KEY": {
