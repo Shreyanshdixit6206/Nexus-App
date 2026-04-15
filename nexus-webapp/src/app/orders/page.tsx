@@ -100,7 +100,7 @@ export default function OrdersDashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {orders.map((order) => (
-              <div key={order.order_id} className="bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden relative">
+              <div key={order.order_id} className="bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden relative card-animate hover-scale">
                 <div className="bg-slate-50 px-5 py-3 border-b flex justify-between items-center">
                   <span className="font-mono text-xs font-bold text-slate-500">{order.order_id}</span>
                   <span className={`text-xs font-bold px-2 py-1 uppercase tracking-wider rounded ${

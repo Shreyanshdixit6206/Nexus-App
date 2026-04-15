@@ -69,7 +69,7 @@ export default function MedicinesStore() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {commonMeds.map((med) => (
-              <div key={med.id} className="bg-white text-left border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col h-full relative overflow-hidden">
+              <div key={med.id} className="bg-white text-left border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col h-full relative overflow-hidden card-animate hover-scale">
                 <div className="absolute top-0 right-0 bg-india-green text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase tracking-widest">
                    Top Pick
                 </div>
@@ -142,7 +142,7 @@ export default function MedicinesStore() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {resultData.pmbjpAlternatives.map((med) => (
-                  <div key={med.id} className="bg-white border text-left border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col h-full relative overflow-hidden">
+                  <div key={med.id} className="bg-white border text-left border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col h-full relative overflow-hidden card-animate hover-scale">
                     <div className="absolute top-0 right-0 bg-india-green text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase tracking-widest">
                        Verify PMBJP
                     </div>

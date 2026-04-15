@@ -27,7 +27,7 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {cart.map((item) => (
-              <div key={item.id} className="flex bg-white border border-slate-200 rounded-lg p-4 shadow-sm items-center">
+              <div key={item.id} className="flex bg-white border border-slate-200 rounded-lg p-4 shadow-sm items-center card-animate hover-scale transition-shadow hover:shadow-md">
                 <div className="flex-grow">
                   <h3 className="font-bold text-navy text-lg">{item.brand_name || 'Generic Medicine'}</h3>
                   <p className="text-sm text-slate-500">{item.primary_ingredient} {item.primary_strength}</p>
@@ -44,7 +44,7 @@ export default function CartPage() {
             ))}
           </div>
           
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 h-fit sticky top-24">
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 h-fit sticky top-24 card-animate">
             <h3 className="text-xl font-bold text-navy mb-4">Order Summary</h3>
             <div className="flex justify-between border-b border-slate-200 pb-2 mb-2">
               <span className="text-slate-600">Subtotal</span>

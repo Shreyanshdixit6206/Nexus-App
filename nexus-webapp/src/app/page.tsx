@@ -59,15 +59,15 @@ export default function Home() {
             <div className="h-1 w-20 gov-gradient mx-auto mt-4"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded border-t-4 border-saffron shadow hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded border-t-4 border-saffron shadow hover:shadow-md transition-shadow card-animate hover-scale">
               <h3 className="text-xl font-bold text-navy mb-3">Accessibility</h3>
               <p className="text-slate-600 text-sm leading-relaxed">Ensure access to quality medicines for all sections of the population, bridging the gap between urban and rural healthcare.</p>
             </div>
-            <div className="bg-white p-8 rounded border-t-4 border-india-green shadow hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded border-t-4 border-india-green shadow hover:shadow-md transition-shadow card-animate hover-scale">
               <h3 className="text-xl font-bold text-navy mb-3">Affordability</h3>
               <p className="text-slate-600 text-sm leading-relaxed">Reduce out-of-pocket expenditure through a robust database of generic alternatives that cost substantially less than branded variants.</p>
             </div>
-            <div className="bg-white p-8 rounded border-t-4 border-navy shadow hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded border-t-4 border-navy shadow hover:shadow-md transition-shadow card-animate hover-scale">
               <h3 className="text-xl font-bold text-navy mb-3">Awareness</h3>
               <p className="text-slate-600 text-sm leading-relaxed">Create awareness about generic medicines through education and our Gemini-powered AI prescription analysis engine.</p>
             </div>

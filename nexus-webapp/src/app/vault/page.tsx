@@ -215,7 +215,7 @@ export default function SecurityVaultPage() {
            ) : (
              <div className="space-y-3">
                {history.map(doc => (
-                 <div key={doc.id} className="bg-white border border-slate-200 rounded p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center shadow-sm gap-4">
+                 <div key={doc.id} className="bg-white border border-slate-200 rounded p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center shadow-sm gap-4 card-animate hover-scale transition-shadow hover:shadow-md">
                    <div>
                      <h3 className="font-bold text-navy">{doc.document_name}</h3>
                      <p className="text-xs text-slate-500 mt-1">Stored on: {new Date(doc.uploaded_at).toLocaleString()}</p>

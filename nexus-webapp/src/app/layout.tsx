@@ -79,7 +79,7 @@ export default function RootLayout({
           {/* Tricolor decorative line */}
           <div className="h-1 w-full gov-gradient"></div>
 
-          <main className="flex-grow animate-fade-up">
+          <main className="flex-grow page-enter">
               {children}
           </main>
 
